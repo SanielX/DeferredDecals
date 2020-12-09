@@ -1,5 +1,5 @@
 # UnityDeferredDecals
- Improved version of [unity's deferred decals system](https://docs.unity3d.com/Manual/GraphicsCommandBuffers.html) with support of layers and some basic frustrum culing.
+ Improved version of [unity's deferred decals system](https://docs.unity3d.com/Manual/GraphicsCommandBuffers.html) with support of layers and some basic frustum culling.
 
   ![](./ForGit/Screenshot.png)
 
@@ -7,7 +7,7 @@
  0. Essential files are stored in `Assets/DeferredDecals`. You can copy paste this folder to your project and everything should work fine
  1. Add `DeferredDecalRenderer.cs` to your scene. There should be only one renderer
  2. Use `GameObject/Effects/Deferred Decal` to create decal
- 4. Use `GDecalShader` shader for you decal material
+ 4. Use `GDecalShader` shader for your decal material
  3. You're amazing :D
 
 ## Pros:
