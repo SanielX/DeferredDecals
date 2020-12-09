@@ -67,13 +67,17 @@ namespace HG.DeferredDecals
 
             foreach (var layer in system.availableLayers)
             {
-                // For each layer rendered we capture new buffers so they can be blended
+                // In shader you can't really read and write to the texture at the same time
+                // That's why we need to copy existing textures for each layer
                 buffer.Blit(BuiltinRenderTextureType.GBuffer0, diffuseID);
                 buffer.Blit(BuiltinRenderTextureType.GBuffer1, smoothnessID);
                 buffer.Blit(BuiltinRenderTextureType.GBuffer2, normalsID);
                 buffer.SetRenderTarget(mrt, BuiltinRenderTextureType.CameraTarget);
 
-                foreach (var decal in system.layerToDecals[layer])
+                if (!system.layerToDecals.TryGetValue(layer, out List<Decal> decals))
+                    return;
+
+                foreach (var decal in decals)
                 {
                     if (!GeometryUtility.TestPlanesAABB(planes, decal.DecalBounds))
                     {

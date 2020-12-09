@@ -23,6 +23,11 @@ namespace HG.DeferredDecals
             RecalculateBounds();
         }
 
+        private void Start()
+        {
+            DeferredDecalSystem.Instance.AddDecal(this);
+        }
+
         public void RecalculateBounds()
         {
             Vector3 scale = transform.lossyScale;
