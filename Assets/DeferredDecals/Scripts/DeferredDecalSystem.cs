@@ -17,7 +17,7 @@ namespace HG.DeferredDecals
 
         public void AddDecal(Decal d)
         {
-            RemoveDecal(d, false);
+            RemoveDecal(d);
 
             if(layerToDecals.TryGetValue(d.Layer, out List<Decal> decals))
             {
@@ -35,13 +35,13 @@ namespace HG.DeferredDecals
             }
         }
 
-        public void RemoveDecal(Decal d, bool removeLayer = true)
+        public void RemoveDecal(Decal d)
         {
             if (layerToDecals.TryGetValue(d.Layer, out List<Decal> decals))
             {
                 decals.Remove(d);
 
-                if(removeLayer && decals.Count == 0)
+                if(decals.Count == 0)
                 {
                     availableLayers.Remove(d.Layer);
                 }

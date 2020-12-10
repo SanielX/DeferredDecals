@@ -37,7 +37,7 @@ Material:
     - _Glossiness: 0.713
     - _GlossinessPow: 0.618
     - _NormalPow: 1
-    - _NormalScale: 1
+    - _NormalScale: 9.64
     - _NormalTolerance: 0.3
     - _ZTestMode: 0
     m_Colors:

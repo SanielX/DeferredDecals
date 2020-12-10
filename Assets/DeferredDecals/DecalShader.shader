@@ -6,7 +6,9 @@
 		_AlphaClip("Alpha Clip", Range(0,1)) = 0.001
 
 		_Color("Color", Color) = (1,1,1,1)
+		[NoScaleOffset]
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
+		[NoScaleOffset]
 		_BumpMap("Normal map", 2D) = "bump"{}
 		_NormalScale("Normal Scale", float) = 1
 		_NormalPow("Normal Influence", Range(0,1)) = 1
@@ -33,9 +35,6 @@
 			ZWrite Off
 			Cull off
 			ZTest Always
-			//	Blend SrcAlpha OneMinusSrcAlpha
-
-			//Blend SrcAlpha OneMinusSrcAlpha
 
 			CGPROGRAM
 			#pragma target 3.0
@@ -130,8 +129,6 @@
 				nor = fixed4(nor.rgb * 0.5 + 0.5, 1);
 
 				nor.rgb = lerp(normal.rgb, nor.rgb, alpha * _NormalPow);
-			//	nor.rgb = normalize(nor.rgb);
-			//	nor.rgb = saturate(nor.rgb);
 				nor.a = 1;
 				outNormal = nor;
 

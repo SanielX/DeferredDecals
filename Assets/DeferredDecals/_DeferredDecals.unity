@@ -655,7 +655,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2c004481ee954006b1d17c257988c01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Layer: 0
+  m_Layer: 30
   m_Material: {fileID: 2100000, guid: 4f04589ca91024ec0ae2130fa10ff3bb, type: 2}
 --- !u!4 &603206499
 Transform:
@@ -665,7 +665,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 603206497}
   m_LocalRotation: {x: 0, y: 0.53933316, z: 0, w: 0.8420925}
-  m_LocalPosition: {x: -1.5761, y: 1.3716, z: -0.20676}
+  m_LocalPosition: {x: -3.377, y: 1.3716, z: 1.399}
   m_LocalScale: {x: 3, y: 1, z: 3}
   m_Children: []
   m_Father: {fileID: 314180676}
@@ -2260,7 +2260,6 @@ GameObject:
   - component: {fileID: 2119992661}
   - component: {fileID: 2119992660}
   - component: {fileID: 2119992658}
-  - component: {fileID: 2119992662}
   m_Layer: 0
   m_Name: _LevelPlaneAndDecalMaster
   m_TagString: Untagged
@@ -2329,19 +2328,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2119992662
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2119992657}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e6fa5f2e7607459ba395388ad01d8f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_CubeMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &2132681790
 GameObject:
   m_ObjectHideFlags: 0

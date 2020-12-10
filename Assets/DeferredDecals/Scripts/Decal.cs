@@ -15,17 +15,23 @@ namespace HG.DeferredDecals
 
         [Range(0, 49)]
         [SerializeField] int m_Layer = 20;
-        [SerializeField] Material m_Material;
+        [SerializeField] Material m_Material = null;
 
         public void OnEnable()
         {
-            DeferredDecalSystem.Instance.AddDecal(this);
+            if (!m_Material)
+                return;
+
+            DeferredDecalSystem.Instance?.AddDecal(this);
             RecalculateBounds();
         }
 
         private void Start()
         {
-            DeferredDecalSystem.Instance.AddDecal(this);
+            if (!m_Material)
+                return;
+
+            DeferredDecalSystem.Instance?.AddDecal(this);
         }
 
         public void RecalculateBounds()
@@ -50,21 +56,12 @@ namespace HG.DeferredDecals
 
         public void OnDisable()
         {
-            DeferredDecalSystem.Instance.RemoveDecal(this);
+            DeferredDecalSystem.Instance?.RemoveDecal(this);
         }
 
 #if UNITY_EDITOR
         private void DrawGizmo(bool selected)
         {
-            /*Gizmos.color = Color.red;
-            foreach (var point in Positions)
-            {
-                Gizmos.DrawSphere(point, 0.1f);
-            }
-
-            Gizmos.color = Color.green;
-            Gizmos.DrawCube(bounds.center, bounds.size);*/
-
             var col = new Color(0.0f, 0.7f, 1f, 1.0f);
             col.a = selected ? 0.1f : 0.05f;
             Gizmos.color = col;

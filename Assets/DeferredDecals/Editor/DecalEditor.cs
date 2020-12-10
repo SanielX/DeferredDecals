@@ -21,16 +21,17 @@ public class DecalEditor : Editor
     public override void OnInspectorGUI()
     {
         EditorGUI.BeginChangeCheck();
+
         PropertyField(layerProperty);
         PropertyField(matProperty);
 
-        if (EditorGUI.EndChangeCheck() || (matProperty != null && editor == null))
+        if (EditorGUI.EndChangeCheck() || (matProperty.objectReferenceValue != null && editor == null))
         {
             if (matProperty.objectReferenceValue != null)
                 editor = (MaterialEditor)CreateEditor(matProperty.objectReferenceValue);
             else
             {
-                editor.OnDisable();
+                editor?.OnDisable();
                 editor = null;
             }
         }

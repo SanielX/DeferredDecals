@@ -43,7 +43,6 @@ namespace HG.DeferredDecals
             buffer = GetBuffer(cam);
 
             // recreate the command buffer when something has changed.
-            var system = DeferredDecalSystem.Instance;
             buffer.Clear();
 
             if (system.availableLayers.Count == 0)
