@@ -13,12 +13,12 @@
 ## Pros:
  * Improved inspector with embedded material editing:
  ![](./ForGit/DecalInspector.png)
- * Layers. Though making layers is **pretty expensive** since the more layers you have the more passes is needed.
+ * Layers. Though making layers is **pretty expensive** since the more layers you have on screen the more passes is needed.
  ![](./ForGit/Layers.png)
  * Cutout. Each decal can use Alpha Clip to avoid using layers
  * Blending with background normals
  ![](./ForGit/NormalsBlending.png)
- * Decals can influence smoothness
+ * Decals can influence smoothness and specular color, using Metallic workflow
  * They are still rendered if you're inside the render box
 
  ## Cons:

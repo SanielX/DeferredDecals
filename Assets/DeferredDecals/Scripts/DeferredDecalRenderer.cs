@@ -31,7 +31,7 @@ namespace HG.DeferredDecals
             system = new DeferredDecalSystem();
         }
 
-        public void LateUpdate()
+        public void Update()
         {
             CommandBuffer buffer;
             var cam = Camera.current;
@@ -125,7 +125,7 @@ namespace HG.DeferredDecals
 
                 // set this command buffer to be executed just before deferred lighting pass
                 // in the camera
-                cam.AddCommandBuffer(CameraEvent.BeforeLighting, buffer);
+                cam.AddCommandBuffer(CameraEvent.BeforeReflections, buffer);
             }
 
             buffer.Clear();

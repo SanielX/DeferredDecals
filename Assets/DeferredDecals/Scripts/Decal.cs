@@ -94,7 +94,7 @@ namespace HG.DeferredDecals
 
         private void OnValidate()
         {
-            OnDisable();
+            DeferredDecalSystem.Instance?.RemoveDecal(this, false);
             OnEnable();
         }
 

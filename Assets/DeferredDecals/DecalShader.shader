@@ -104,8 +104,8 @@
 
 				i.uv = opos.xz + 0.5;
 
-				half3 normal = tex2D(_NormalsCopy, uv).rgb;
-				fixed3 wnormal = normal.rgb * 2.0 - 1.0;
+				half4 originalNormal = tex2D(_NormalsCopy, uv);
+				fixed3 wnormal = originalNormal.rgb * 2.0 - 1.0;
 				wnormal = normalize(wnormal);
 
 				clip(dot(wnormal, i.orientation) - _NormalTolerance);
@@ -113,15 +113,15 @@
 				float4 albedo = tex2D(_MainTex, i.uv);
 				float alpha = albedo.a;
 
-				clip(alpha - _AlphaClip);   // Just lpha clip
+				clip(alpha - _AlphaClip);   // Just alpha clip
 				albedo *= _Color;
+				alpha *= _Color.a;
 
 				float3 specularTint;
 				float oneMinusReflectivity;
 
 				albedo.rgb = DiffuseAndSpecularFromMetallic(albedo.rgb, _Metallic, /*out*/ specularTint, /*out*/ oneMinusReflectivity);
 				albedo.rgb *= oneMinusReflectivity; 
-				//albedo.a = 1;
 				
 				float4 specular = tex2D(_SpecCopy, uv);
 				specular.rgb = lerp(specular, specularTint, alpha * _GlossinessPow);
@@ -132,16 +132,15 @@
 				outDiffuse.a = originalDiffuse.a;
 
 				half scale = _NormalScale * alpha;
-				fixed4 nor = fixed4(UnpackScaleNormal(tex2D(_BumpMap, i.uv), scale), 1);
+				fixed3 nor = UnpackScaleNormal(tex2D(_BumpMap, i.uv), scale);
 				half3x3 norMat = half3x3(i.orientationX, i.orientationZ, i.orientation);
 				nor.rgb = mul(nor, norMat);
-				nor.rgb = BlendNormals(nor.rgb, normal);
+				nor.rgb = BlendNormals(nor.rgb, 0); // This doesn't allow to completely overwrite originalNormal
 				nor = fixed4(nor.rgb * 0.5 + 0.5, 1);
 
-				nor.rgb = lerp(normal.rgb, nor.rgb, alpha * _NormalPow);
-				nor.a = 1;
+				nor.rgb = lerp(originalNormal.rgb, nor.rgb, alpha * _NormalPow);
 
-				outNormal = nor;
+				outNormal = fixed4(nor, originalNormal.a);
 				outSpec = specular;
 
 				/*		float4 originalEmission = tex2D(_EmissionCopy, uv);
