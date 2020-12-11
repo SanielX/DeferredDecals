@@ -24,6 +24,6 @@
  ## Cons:
  * No special normals/diffuse only decals, so each decal layer does copy 3 GBuffers no matter what
  * Visibility in editor can be clunky
- * Shader is under development. Specular color remains unchanged no matter what, no emission support
+ * Shader is under development. No emission support yet
  * No instancing
  * Culling doesn't care about walls, it's just AABB check. For now
