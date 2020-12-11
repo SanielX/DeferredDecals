@@ -36,9 +36,10 @@ Material:
     - _CullMode: 0
     - _Glossiness: 0.5
     - _GlossinessPow: 1
+    - _Metallic: 0
     - _NormalPow: 1
     - _NormalScale: 1
-    - _NormalTolerance: 0.8
+    - _NormalTolerance: 0.035
     - _ZTestMode: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

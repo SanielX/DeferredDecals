@@ -10,12 +10,14 @@ public class DecalEditor : Editor
 {
     SerializedProperty matProperty;
     SerializedProperty layerProperty;
+    SerializedProperty featuresProperty;
     MaterialEditor editor;
 
     private void OnEnable()
     {
         matProperty = serializedObject.FindProperty("m_Material");
         layerProperty = serializedObject.FindProperty("m_Layer");
+        featuresProperty = serializedObject.FindProperty("m_FeatureSet");
     }
 
     public override void OnInspectorGUI()
@@ -24,6 +26,8 @@ public class DecalEditor : Editor
 
         PropertyField(layerProperty);
         PropertyField(matProperty);
+
+       // featuresProperty.intValue = MaskField(new GUIContent(featuresProperty.displayName), featuresProperty.intValue, featuresProperty.enumDisplayNames);
 
         if (EditorGUI.EndChangeCheck() || (matProperty.objectReferenceValue != null && editor == null))
         {

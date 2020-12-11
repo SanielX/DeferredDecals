@@ -2,7 +2,16 @@
 
 namespace HG.DeferredDecals
 {
-    [ExecuteInEditMode]
+    [System.Flags]
+    public enum DecalFeature
+    {
+        Diffuse = 1,
+        Normal = 2,
+        Smoothness = 4,
+        Emission = 8
+    }
+
+    [ExecuteAlways]
     [AddComponentMenu("Effects/Decal")]
     public class Decal : MonoBehaviour
     {
@@ -15,6 +24,7 @@ namespace HG.DeferredDecals
 
         [Range(0, 49)]
         [SerializeField] int m_Layer = 20;
+        [SerializeField] DecalFeature m_FeatureSet = (DecalFeature)~0;        //TODO: Make this matter
         [SerializeField] Material m_Material = null;
 
         public void OnEnable()

@@ -34,8 +34,9 @@ Material:
     m_Floats:
     - _AlphaClip: 0.191
     - _CullMode: 0
-    - _Glossiness: 0.713
-    - _GlossinessPow: 0.618
+    - _Glossiness: 0.654
+    - _GlossinessPow: 0.739
+    - _Metallic: 1
     - _NormalPow: 1
     - _NormalScale: 9.64
     - _NormalTolerance: 0.3

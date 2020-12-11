@@ -14,12 +14,13 @@
 		_NormalPow("Normal Influence", Range(0,1)) = 1
 
 		_Glossiness("Smoothness", Range(0,1)) = 0.5
-		_GlossinessPow("Smoothness Influence", Range(0,1)) = 1
+		_Metallic("Metallic", Range(0,1)) = 0
+		_GlossinessPow("Specular Influence", Range(0,1)) = 1
 
-	//	_EmissionTex("Emission Texture", 2D) = "black"{}
+		//	_EmissionTex("Emission Texture", 2D) = "black"{}
 
-//		[HDR]
-//		_EmissionCol("Emission Color", color) = (0,0,0,0)
+		//		[HDR]
+		//		_EmissionCol("Emission Color", color) = (0,0,0,0)
 	}
 	SubShader
 	{
@@ -71,13 +72,12 @@
 
 			half _NormalTolerance;
 			float4 _Color;
-		//	float4 _EmissionCol;
-			float _Glossiness;
+			half _Glossiness;
+			half _Metallic;
 			float _GlossinessPow, _NormalPow;
 
 			sampler2D _MainTex;
 			sampler2D _BumpMap;
-		//	sampler2D _EmissionTex;
 			
 			sampler2D_float _CameraDepthTexture;
 			sampler2D _NormalsCopy;
@@ -87,11 +87,12 @@
 			float _NormalScale;
 			float _AlphaClip;
 
-			void frag(v2f i, out half4 diffuse : COLOR0, out half4 outNormal : COLOR2, 
-							 out half4 outSpec : COLOR1/*, out half4 outEmission : COLOR3*/)
+			void frag(v2f i, out half4 outDiffuse : COLOR0, out half4 outNormal : COLOR2, 
+			out half4 outSpec : COLOR1/*, out half4 outEmission : COLOR3*/)
 			{
 				i.ray = i.ray * (_ProjectionParams.z / i.ray.z);
 				float2 uv = i.screenUV.xy / i.screenUV.w;
+
 				// read depth and reconstruct world position
 				float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv);
 				depth = Linear01Depth(depth);
@@ -99,7 +100,7 @@
 				float3 wpos = mul(unity_CameraToWorld, vpos).xyz;
 				float3 opos = mul(unity_WorldToObject, float4(wpos,1)).xyz;
 
-				clip(float3(0.5,0.5,0.5) - abs(opos.xyz));
+				clip(float3(0.5,0.5,0.5) - abs(opos.xyz));   // First clip when out of box bounds
 
 				i.uv = opos.xz + 0.5;
 
@@ -109,17 +110,26 @@
 
 				clip(dot(wnormal, i.orientation) - _NormalTolerance);
 
-				float4 col = tex2D(_MainTex, i.uv) * _Color;
-				float alpha = col.a;
+				float4 albedo = tex2D(_MainTex, i.uv);
+				float alpha = albedo.a;
 
-				clip(alpha - _AlphaClip);
+				clip(alpha - _AlphaClip);   // Just lpha clip
+				albedo *= _Color;
 
-				col.a = 1;
+				float3 specularTint;
+				float oneMinusReflectivity;
 
-				float4 diff = tex2D(_DiffuseCopy, uv);
-				diffuse = 0;
-				diffuse.rgb = lerp(diff.rgb, col.rgb, saturate(alpha));
-				diffuse.a = diff.a;
+				albedo.rgb = DiffuseAndSpecularFromMetallic(albedo.rgb, _Metallic, /*out*/ specularTint, /*out*/ oneMinusReflectivity);
+				albedo.rgb *= oneMinusReflectivity; 
+				//albedo.a = 1;
+				
+				float4 specular = tex2D(_SpecCopy, uv);
+				specular.rgb = lerp(specular, specularTint, alpha * _GlossinessPow);
+				specular.a = lerp(specular.a, _Glossiness, alpha * _GlossinessPow);
+
+				float4 originalDiffuse = tex2D(_DiffuseCopy, uv);
+				outDiffuse.rgb = lerp(originalDiffuse.rgb, albedo.rgb, saturate(alpha));
+				outDiffuse.a = originalDiffuse.a;
 
 				half scale = _NormalScale * alpha;
 				fixed4 nor = fixed4(UnpackScaleNormal(tex2D(_BumpMap, i.uv), scale), 1);
@@ -130,22 +140,19 @@
 
 				nor.rgb = lerp(normal.rgb, nor.rgb, alpha * _NormalPow);
 				nor.a = 1;
+
 				outNormal = nor;
+				outSpec = specular;
 
-				float4 originalSmoothness = tex2D(_SpecCopy, uv);
-				originalSmoothness.a = lerp(originalSmoothness.a, _Glossiness, alpha * _GlossinessPow);
-
-				outSpec = originalSmoothness;
-
-		/*		float4 originalEmission = tex2D(_EmissionCopy, uv);
+				/*		float4 originalEmission = tex2D(_EmissionCopy, uv);
 				float4 emission = tex2D(_EmissionTex, i.uv) + _EmissionCol;
 				#if UNITY_HDR_ON
 					emission.rgb = exp2(-emission.rgb);
 				#endif
 				
-				outEmission = lerp(originalEmission, emission, alpha);
+				outEmission = originalEmission + (emission * alpha); 
 				outEmission.a = originalEmission.a;
-*/
+				*/
 			}
 			ENDCG
 		}

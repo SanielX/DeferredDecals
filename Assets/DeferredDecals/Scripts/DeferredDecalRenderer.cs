@@ -6,27 +6,25 @@ using System.Linq;
 
 namespace HG.DeferredDecals
 {
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     public class DeferredDecalRenderer : MonoBehaviour
     {
         private const string BUFFER_NAME = "Deferred decals";
-        Dictionary<Camera, CommandBuffer> cameras = new Dictionary<Camera, CommandBuffer>();
-        DeferredDecalSystem system;
 
-        /// <summary>
-        /// For debug purposes
-        /// </summary>
+        private static readonly int normalsID = Shader.PropertyToID("_NormalsCopy");
+        private static readonly int diffuseID = Shader.PropertyToID("_DiffuseCopy");
+        private static readonly int smoothnessID = Shader.PropertyToID("_SpecCopy");
+
+        private readonly Dictionary<Camera, CommandBuffer> cameras = new Dictionary<Camera, CommandBuffer>();
+        private readonly Plane[] planes = new Plane[6];
+        private readonly RenderTargetIdentifier[] renderTargets = new RenderTargetIdentifier[3];
+        
+        private DeferredDecalSystem system;
+
+        /// <summary> For debug purposes </summary>
         public int renderedDecals { get; private set; }
 
-        static readonly int normalsID = Shader.PropertyToID("_NormalsCopy");
-        static readonly int diffuseID = Shader.PropertyToID("_DiffuseCopy");
-        static readonly int smoothnessID = Shader.PropertyToID("_SpecCopy");
-
-        [SerializeField]
-        private Mesh m_CubeMesh = null;
-
-        Plane[] planes = new Plane[6];
-        RenderTargetIdentifier[] mrt = new RenderTargetIdentifier[3];
+        [SerializeField] Mesh m_CubeMesh = null;
 
         private void Awake()
         {
@@ -41,9 +39,6 @@ namespace HG.DeferredDecals
                 return;
 
             buffer = GetBuffer(cam);
-
-            // recreate the command buffer when something has changed.
-            buffer.Clear();
 
             if (system.availableLayers.Count == 0)
                 return;
@@ -60,18 +55,13 @@ namespace HG.DeferredDecals
             buffer.GetTemporaryRT(smoothnessID, -1, -1);
             buffer.GetTemporaryRT(normalsID, -1, -1);
 
-            mrt[0] = BuiltinRenderTextureType.GBuffer0;
-            mrt[1] = BuiltinRenderTextureType.GBuffer1;
-            mrt[2] = BuiltinRenderTextureType.GBuffer2;
+            renderTargets[0] = BuiltinRenderTextureType.GBuffer0;
+            renderTargets[1] = BuiltinRenderTextureType.GBuffer1;
+            renderTargets[2] = BuiltinRenderTextureType.GBuffer2;
 
             foreach (var layer in system.availableLayers)
             {
-                // In shader you can't really read and write to the texture at the same time
-                // That's why we need to copy existing textures for each layer
-                buffer.Blit(BuiltinRenderTextureType.GBuffer0, diffuseID);
-                buffer.Blit(BuiltinRenderTextureType.GBuffer1, smoothnessID);
-                buffer.Blit(BuiltinRenderTextureType.GBuffer2, normalsID);
-                buffer.SetRenderTarget(mrt, BuiltinRenderTextureType.CameraTarget);
+                bool copiedTextures = false;
 
                 if (!system.layerToDecals.TryGetValue(layer, out List<Decal> decals))
                     return;
@@ -81,6 +71,14 @@ namespace HG.DeferredDecals
                     if (!GeometryUtility.TestPlanesAABB(planes, decal.DecalBounds))
                     {
                         continue;
+                    }
+
+                    if (!copiedTextures)
+                    {
+                        // In shader you can't really read and write to the texture at the same time
+                        // That's why we need to copy existing textures for each layer
+                        CopyRenderes();
+                        copiedTextures = true;
                     }
 
                     renderedDecals++;
@@ -94,6 +92,14 @@ namespace HG.DeferredDecals
             buffer.ReleaseTemporaryRT(normalsID);
             buffer.ReleaseTemporaryRT(diffuseID);
             buffer.ReleaseTemporaryRT(smoothnessID);
+
+            void CopyRenderes()
+            {
+                buffer.Blit(BuiltinRenderTextureType.GBuffer0, diffuseID);
+                buffer.Blit(BuiltinRenderTextureType.GBuffer1, smoothnessID);
+                buffer.Blit(BuiltinRenderTextureType.GBuffer2, normalsID);
+                buffer.SetRenderTarget(renderTargets, BuiltinRenderTextureType.CameraTarget);
+            }
         }
 
         private CommandBuffer GetBuffer(Camera cam)
@@ -122,6 +128,7 @@ namespace HG.DeferredDecals
                 cam.AddCommandBuffer(CameraEvent.BeforeLighting, buffer);
             }
 
+            buffer.Clear();
             return buffer;
         }
     }
