@@ -13,7 +13,8 @@
 ## Pros:
  * Improved inspector with embedded material editing:
  ![](./ForGit/DecalInspector.png)
- * Layers. Though making layers is **pretty expensive** since the more layers you have on screen the more passes is needed.
+ * Layers. Though making layers is **pretty expensive** since the more layers you have on screen the more passes are needed.
+
  ![](./ForGit/Layers.png)
  * Cutout. Each decal can use Alpha Clip to avoid using layers
  * Blending with background normals
