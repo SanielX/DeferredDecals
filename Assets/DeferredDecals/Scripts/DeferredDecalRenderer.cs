@@ -25,24 +25,21 @@ namespace HG.DeferredDecals
         public int renderedDecals { get; private set; }
 
         [SerializeField] Mesh m_CubeMesh = null;
-
+        
+        private void OnEnable()  => Camera.onPreRender += RenderDecals;
+        private void OnDisable() => Camera.onPreRender -= RenderDecals;
+        
         private void Awake()
         {
             system = new DeferredDecalSystem();
         }
 
-        public void Update()
+        public void RenderDecals(Camera cam)
         {
-            CommandBuffer buffer;
-            var cam = Camera.current;
-            if (!cam)
+            if (!cam || system.availableLayers.Count == 0)
                 return;
 
-            buffer = GetBuffer(cam);
-
-            if (system.availableLayers.Count == 0)
-                return;
-
+            CommandBuffer buffer = GetBuffer(cam);
             renderedDecals = 0;
 
             if (!gameObject.activeInHierarchy && enabled)
